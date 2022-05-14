@@ -10,8 +10,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 COPY client.py .
-COPY server.py .
 RUN mkdir _common
 COPY _common/__init__.py _common
 
-CMD ["false"]
+CMD ["python3", "client.py"]
