@@ -83,7 +83,7 @@ def process_command(update, context, command=None):
     data = {"message": json.dumps(update.message.to_dict())}
     if update.callback_query is not None:
         data["data"] = update.callback_query.data
-    logging.warning(message_str)
+    logging.warning(data)
     requests.post(url, data=data)
 
 
