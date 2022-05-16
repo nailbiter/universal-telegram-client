@@ -84,6 +84,23 @@ def process_command(update, context, command=None):
     requests.post(url, data={"message": message_str})
 
 
+def edbp(update, context):
+    #    assert command is not None
+    chat_id = update.message.chat_id
+    if update.message.chat_id != int(os.environ["CHAT_ID"]):
+        logging.warning(
+            f"chat_id={chat_id}!={os.environ['CHAT_ID']} ==> ignore")
+        return
+
+    message_id = update.callback_query.message.message_id
+    data = (update.callback_query.data)
+    url = f"http://{os.environ['SCHEDULER']}/{os.environ.get('CALLBACK_QUERY_CB','callback_query_cb')}"
+    logging.error(update.message.to_dict())
+    message_str = json.dumps(update.message.to_dict())
+    logging.warning(message_str)
+    requests.post(url, data={"message": message_str})
+
+
 def main() -> None:
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -95,8 +112,11 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(
+        CallbackQueryHandler(callback=edbp))
 
-    for k in ["new_timer", "new_habit", "list_timers", "list_habits"]:
+#    for k in ["new_timer", "new_habit", "list_timers", "list_habits"]:
+    for k in os.environ["TELEGRAM_COMMANDS"].split(","):
         dispatcher.add_handler(CommandHandler(
             k, functools.partial(process_command, command=k)))
 

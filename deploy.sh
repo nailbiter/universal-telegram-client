@@ -1,2 +1,4 @@
 #!/bin/sh
-docker push -t nailbiter:universal-telegram-client
+
+github.py cpc -m stash
+docker push nailbiter/universal-telegram-client
