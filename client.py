@@ -114,17 +114,19 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
+
     if "CALLBACK_QUERY_CB" in os.environ:
         dispatcher.add_handler(
             CallbackQueryHandler(callback=functools.partial(process_command, command=os.environ["CALLBACK_QUERY_CB"])))
-    if "MESSAGE_CB" in os.environ:
-        dispatcher.add_handler(
-            MessageHandler(filters=Filters.all, callback=functools.partial(process_command, command=os.environ["MESSAGE_CB"])))
 
     if "TELEGRAM_COMMANDS" in os.environ:
         for k in os.environ["TELEGRAM_COMMANDS"].split(","):
             dispatcher.add_handler(CommandHandler(
                 k, functools.partial(process_command, command=k)))
+
+    if "MESSAGE_CB" in os.environ:
+        dispatcher.add_handler(
+            MessageHandler(filters=Filters.all, callback=functools.partial(process_command, command=os.environ["MESSAGE_CB"])))
 
     # on non command i.e message - echo the message on Telegram
 #    dispatcher.add_handler(MessageHandler(
