@@ -80,10 +80,11 @@ def process_command(update, context, command=None):
     url = f"http://{os.environ['SCHEDULER']}/{command}"
     logging.error(update.message.to_dict())
     update.message.chat_id
-    message_str = json.dumps(update.message.to_dict())
-    data = update.callback_query.data
+    data = {"message": json.dumps(update.message.to_dict())}
+    if update.callback_query is not None:
+        data["data"] = update.callback_query.data
     logging.warning(message_str)
-    requests.post(url, data={"message": message_str, "data": data})
+    requests.post(url, data=data)
 
 
 def edbp(update, context):
