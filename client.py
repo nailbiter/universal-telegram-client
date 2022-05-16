@@ -81,8 +81,9 @@ def process_command(update, context, command=None):
     logging.error(update.message.to_dict())
     update.message.chat_id
     message_str = json.dumps(update.message.to_dict())
+    data = update.callback_query.data
     logging.warning(message_str)
-    requests.post(url, data={"message": message_str})
+    requests.post(url, data={"message": message_str, "data": data})
 
 
 def edbp(update, context):
@@ -94,12 +95,11 @@ def edbp(update, context):
         return
 
     message_id = update.callback_query.message.message_id
-    data = (update.callback_query.data)
     url = f"http://{os.environ['SCHEDULER']}/{os.environ.get('CALLBACK_QUERY_CB','callback_query_cb')}"
     logging.error(update.message.to_dict())
     message_str = json.dumps(update.message.to_dict())
     logging.warning(message_str)
-    requests.post(url, data={"message": message_str})
+    requests.post(url, data={"message": message_str, "data": data})
 
 
 def main() -> None:
@@ -113,14 +113,17 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(
-        CallbackQueryHandler(callback=edbp))
+    if "CALLBACK_QUERY_CB" in os.environ:
+        dispatcher.add_handler(
+            CallbackQueryHandler(callback=functools.partial(process_command, command=os.environ["CALLBACK_QUERY_CB"])))
+    if "MESSAGE_CB" in os.environ:
+        dispatcher.add_handler(
+            MessageHandler(callback=functools.partial(process_command, command=os.environ["MESSAGE_CB"])))
 
-#    for k in ["new_timer", "new_habit", "list_timers", "list_habits"]:
-    for k in os.environ["TELEGRAM_COMMANDS"].split(","):
-        #        logging.warning(f"command: \"{k}\"")
-        dispatcher.add_handler(CommandHandler(
-            k, functools.partial(process_command, command=k)))
+    if "TELEGRAM_COMMANDS" in os.environ:
+        for k in os.environ["TELEGRAM_COMMANDS"].split(","):
+            dispatcher.add_handler(CommandHandler(
+                k, functools.partial(process_command, command=k)))
 
     # on non command i.e message - echo the message on Telegram
 #    dispatcher.add_handler(MessageHandler(
