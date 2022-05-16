@@ -118,7 +118,7 @@ def main() -> None:
             CallbackQueryHandler(callback=functools.partial(process_command, command=os.environ["CALLBACK_QUERY_CB"])))
     if "MESSAGE_CB" in os.environ:
         dispatcher.add_handler(
-            MessageHandler(callback=functools.partial(process_command, command=os.environ["MESSAGE_CB"])))
+            MessageHandler(filters=Filters.all, callback=functools.partial(process_command, command=os.environ["MESSAGE_CB"])))
 
     if "TELEGRAM_COMMANDS" in os.environ:
         for k in os.environ["TELEGRAM_COMMANDS"].split(","):
