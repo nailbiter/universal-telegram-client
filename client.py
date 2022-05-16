@@ -118,6 +118,7 @@ def main() -> None:
 
 #    for k in ["new_timer", "new_habit", "list_timers", "list_habits"]:
     for k in os.environ["TELEGRAM_COMMANDS"].split(","):
+        logging.warning(f"command: \"{k}\"")
         dispatcher.add_handler(CommandHandler(
             k, functools.partial(process_command, command=k)))
 
