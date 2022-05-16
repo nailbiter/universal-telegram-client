@@ -60,7 +60,7 @@ def start(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     chat_id = update.message.chat_id
     update.message.reply_markdown_v2(
-        fr'Hi {user.mention_markdown_v2()}, your chat_id is {chat_id}\!',
+        fr'Hi {user.mention_markdown_v2()}, your chatid is {chat_id}\!',
         reply_markup=ForceReply(selective=True),
     )
 
