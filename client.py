@@ -58,8 +58,9 @@ logger = logging.getLogger(__name__)
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
+    chat_id = update.message.chat_id
     update.message.reply_markdown_v2(
-        fr'Hi {user.mention_markdown_v2()}\!',
+        fr'Hi {user.mention_markdown_v2()}, your chat_id={chat_id}\!',
         reply_markup=ForceReply(selective=True),
     )
 
@@ -72,7 +73,7 @@ def help_command(update: Update, context: CallbackContext) -> None:
 def process_command(update, context, command=None):
     assert command is not None
     chat_id = update.message.chat_id
-    if update.message.chat_id != int(os.environ["CHAT_ID"]):
+    if ("CHAT_ID" in os.environ) and (update.message.chat_id != int(os.environ["CHAT_ID"])):
         logging.warning(
             f"chat_id={chat_id}!={os.environ['CHAT_ID']} ==> ignore")
         return
